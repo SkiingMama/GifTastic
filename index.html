@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>GifTastic Homework</title>
+  <style type="text/css"></style>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+  <link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+<body>
+
+  <div class="container">
+    <h2>City Search</h2>
+
+    <div id="city-view"></div>
+
+    <form id="city-form">
+      <label for="city-input">Add A City</label>
+      <input type="text" id="city-input"><br>
+      <input id="travel" type="submit" value="Submit">
+    </form>
+  </div>
+
+  <div id="GIFArea"></div>
+
+  <script type="text/javascript">
+
+  var citiesArray = ["Paris", "Russia", "Rome", "Colorado", "New York", "San Francisco", "Hong Kong", "Sydney", "Buenos Aires"];
+
+        function renderButtons() {
+
+        $("#city-view").empty();
+
+        for (var i = 0; i < citiesArray.length; i++) {
+
+          var a = $("<button>");
+        
+          a.addClass("cities");
+     
+          a.attr("data-cities", citiesArray[i]);
+      
+          a.text(citiesArray[i]);
+  
+          $("#city-view").append(a);           
+  }
+}
+renderButtons();
+
+ $("button").on("click", function(event) {
+        
+        var x = $(this).data("cities");
+
+        var queryURL = "http://api.giphy.com/v1/gifs/search?q="+x+"&api_key=dc6zaTOxFJmzC&limit-10";
+            console.log(queryURL);
+
+       $.ajax({url:queryURL,method:'GET'})
+        .done(function(response){
+            console.log(response);
+            for(var i=0;i<response.data.length;i++){
+            $('#GIFArea').prepend("<p>Rating: "+response.data[i].rating+"</p>");
+            $('#GIFArea').prepend("<img src='"+response.data[i].images.downsized.url+"'>");
+
+            //Not sure how to deal with getting the still images (response.data[i].images.original_still.url)
+            //Once capture the still image give it a class="gif"
+      }
+    })
+  });
+
+      $("#travel").on("click", function(event) {
+
+        event.preventDefault();
+
+        var cityInput = $("#city-input").val().trim();
+    
+        citiesArray.push(cityInput);
+
+        renderButtons();
+        var x = cityInput;
+
+        var queryURL = "http://api.giphy.com/v1/gifs/search?q="+x+"&api_key=dc6zaTOxFJmzC&limit-10";
+            console.log(queryURL);
+    
+
+       $.ajax({url:queryURL,method:'GET'})
+        .done(function(response){
+            console.log(response);
+            for(var i=0;i<response.data.length;i++){
+            $('#GIFArea').prepend("<p>Rating: "+response.data[i].rating+"</p>");
+            $('#GIFArea').prepend("<img src='"+response.data[i].images.downsized.url+"'>");
+        }
+      })
+    });
+
+       $("gif").on("click", function() {
+      var state = $(this).attr("data-state");
+      if (state === "still") {
+        $(this).attr("src", $(this).attr("data-animate"));
+        $(this).attr("data-state", "animate");
+      } else {
+        $(this).attr("src", $(this).attr("data-still"));
+        $(this).attr("data-state", "still");
+      }
+    });
+   
+</script>
+
+
+</body>
+
+</html>
